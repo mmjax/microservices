@@ -59,7 +59,7 @@ jobs:
         yc-sa-json-credentials: ${{ secrets.YC_KEYS }}
         container-name: ${{ secrets.YC_CONTAINER_NAME }}
         folder-id: ${{ secrets.YC_FOLDER_ID }}
-        revision-image-url: cr.yandex/${{ secrets.YC_REGISTRY_ID }}/maprac6-task:latest
+        revision-image-url: cr.yandex/${{ secrets.YC_REGISTRY_ID }}/microservices-order:latest
         revision-service-account-id: ${{ secrets.YC_SA_ID }}
         revision-env: |
           AMQP_URL=${{ secrets.ENV_AMQP_URL }}
