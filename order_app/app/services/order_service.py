@@ -1,6 +1,7 @@
 from uuid import UUID
 from datetime import datetime
 from fastapi import Depends
+from uuid import uuid4
 from app.models.order import Order, OrderStatuses
 from app.repositories.bd_order_repo import OrderRepo
 
@@ -18,7 +19,7 @@ class OrderService():
         return self.order_repo.get_order_by_id(order_id)
 
     def create_order(self, cart: UUID, price=float) -> Order:
-        order = Order(cart=cart, discount=None, status=OrderStatuses.CREATED, price=price)
+        order = Order(id=uuid4(), cart=cart, discount=None, status=OrderStatuses.CREATED, price=price)
         return self.order_repo.create_order(order)
 
     def paid_order(self, id: UUID) -> Order:
