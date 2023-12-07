@@ -1,9 +1,12 @@
 import traceback
 from uuid import UUID
 from sqlalchemy.orm import Session
+from typing import List
+import logging
 
+from fastapi import APIRouter, Depends, HTTPException, Body
 from app.database import get_db
-from app.models.order import Order
+from app.models.order import Order, OrderStatuses
 from app.schemas.order import Order as DBOrder
 
 
@@ -46,3 +49,13 @@ class OrderRepo():
         except:
             traceback.print_exc()
             raise KeyError
+    
+    def order_paid(self, order: Order) -> Order:
+        try:
+            db_order = self.db.query(DBOrder).filter(DBOrder.id == order.id).first()
+            db_order.status = order.status
+            self.db.commit()
+            return self._map_to_model(db_order)
+        except:
+            traceback.print_exc()
+            raise KeyError        

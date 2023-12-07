@@ -1,6 +1,7 @@
 import enum
-from uuid import UUID
-from pydantic import BaseModel, ConfigDict
+from typing import List
+from uuid import UUID, uuid4
+from pydantic import BaseModel, ConfigDict, validator
 
 
 class OrderStatuses(enum.Enum):
@@ -8,10 +9,10 @@ class OrderStatuses(enum.Enum):
     PAID = 'paid'
     DONE = 'done'
 
-
 class Order(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    id: UUID
-    items: UUID
+    id: UUID = uuid4()
+    cart: UUID
     status: OrderStatuses
     discount: float | None
+    price: float

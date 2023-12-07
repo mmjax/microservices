@@ -12,9 +12,12 @@ class OrderService():
 
     def get_orders(self) -> list[Order]:
         return self.order_repo.get_orders()
+    
+    def get_order_by_id(self, order_id: UUID):
+        return self.order_repo.get_order_by_id(order_id)
 
-    def create_order(self, order_id: UUID, items: dict) -> OrderRepo:
-        order = OrderRepo(id=order_id, address=items, discount=None, status=OrderStatuses.CREATED)
+    def create_order(self, cart: UUID, price=float) -> Order:
+        order = Order(cart=cart, discount=None, status=OrderStatuses.CREATED, price=price)
         return self.order_repo.create_order(order)
 
     def paid_order(self, id: UUID) -> Order:
@@ -22,7 +25,7 @@ class OrderService():
         if order.status != OrderStatuses.CREATED:
             raise ValueError
         order.status = OrderStatuses.PAID
-        return self.order_repo.set_status(order)
+        return self.order_repo.order_paid(order)
 
     def set_discount(self, id: UUID, discount: float) -> Order:
         order = self.order_repo.get_order_by_id(id)
@@ -36,4 +39,4 @@ class OrderService():
         if order.status != OrderStatuses.CREATED:
             raise ValueError
         order.status = OrderStatuses.DONE
-        return self.order_repo.set_status(order)
+        return self.order_repo.order_paid(order)
