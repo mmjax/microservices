@@ -4,15 +4,15 @@ FROM python:3.10
 WORKDIR /order_app
 
 # Установка зависимостей проекта
-COPY ./order_app/requirements.txt /order_app/
+COPY ./requirements.txt /order_app/
 RUN pip install --no-cache-dir --upgrade -r /order_app/requirements.txt
 
 # Перенос проекта в образ
-COPY ./order_app/app /order_app/app
+COPY ./app /order_app/app
 
 # Копирование файлов alembic
-COPY ./order_app/alembic /order_app/alembic
-COPY ./order_app/alembic.ini /order_app/alembic.ini
+COPY ./alembic /order_app/alembic
+COPY ./alembic.ini /order_app/alembic.ini
 
 EXPOSE 80
 
