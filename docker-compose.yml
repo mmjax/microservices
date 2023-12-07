@@ -20,8 +20,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-
-  your_app:
+  order_app:
     build:
       context: .
       dockerfile: /order_app/Dockerfile
@@ -30,6 +29,17 @@ services:
     depends_on:
       - postgres
       - rabbitmq
+
+  promo_app:
+    build:
+      context: .
+      dockerfile: /promo_app/Dockerfile
+    ports:
+      - "81:81"
+    depends_on:
+      - rabbitmq
+      - order_app
+
   
   pgadmin:
     container_name: pgadmin

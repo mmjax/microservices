@@ -1,4 +1,5 @@
 from uuid import UUID
+import asyncio
 from fastapi import APIRouter, Depends, HTTPException, Body
 from app.services.order_service import OrderService
 from app.models.order import Order
@@ -18,7 +19,7 @@ def get_order_by_id(id: UUID, order_service: OrderService = Depends(OrderService
         raise HTTPException(404, f'Order with id={id} not found')
     
 @order_router.post('/')
-def get_order_by_id(cart: UUID, price: float, order_service: OrderService = Depends(OrderService)) -> Order:
+def create_order(cart: UUID, price: float, order_service: OrderService = Depends(OrderService)) -> Order:
     try:
         order = order_service.create_order(cart, price)
         return order.dict()
@@ -45,26 +46,3 @@ def finish_order(id: UUID, order_service: OrderService = Depends(OrderService)) 
         raise HTTPException(404, f'Order with id={id} not found')
     except ValueError:
         raise HTTPException(400, f'Order with id={id} can\'t be finished')
-
-# @delivery_router.post('/{id}/cancel')
-# def cancel_delivery(id: UUID, order_service: OrderService = Depends(OrderService)) -> Order:
-#     try:
-#         order = order_service.cancel_delivery(id)
-#         return order.dict()
-#     except KeyError:
-#         raise HTTPException(404, f'Order with id={id} not found')
-#     except ValueError:
-#         raise HTTPException(400, f'Order with id={id} can\'t be canceled')
-
-# @order_router.post('/{id}/discount')
-# def set_discount(
-#  id: UUID,
-#  discount: float,
-#  order_service: OrderService = Depends(OrderService)) -> Order:
-#     try:
-#         order = order_service.set_discount(id, discount)
-#         return order.dict()
-#     except KeyError:
-#         raise HTTPException(404, f'Order with id={id} not found')
-#     except ValueError:
-#         raise HTTPException(400, f'Да пошел ты нахуй')
