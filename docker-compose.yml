@@ -22,8 +22,8 @@ services:
       - "15672:15672"
   order_app:
     build:
-      context: .
-      dockerfile: /order_app/Dockerfile
+      context: order_app
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     depends_on:
@@ -32,8 +32,8 @@ services:
 
   promo_app:
     build:
-      context: .
-      dockerfile: /promo_app/Dockerfile
+      context: promo_app
+      dockerfile: Dockerfile
     ports:
       - "81:81"
     depends_on:
