@@ -9,10 +9,12 @@ RUN pip install --no-cache-dir --upgrade -r /order_app/requirements.txt
 
 # Перенос проекта в образ
 COPY ./app /order_app/app
+COPY ./tests /order_app/tests
 
 # Копирование файлов alembic
 COPY ./alembic /order_app/alembic
 COPY ./alembic.ini /order_app/alembic.ini
+
 
 EXPOSE 80
 
