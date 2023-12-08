@@ -12,15 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Prepare unit tests
-        run: |
-          sudo apt update
-          sudo apt install -y python3-pip
-          pip install -r requirements.txt
-      - name: Run unit tests
-        run: |
-          pytest ./tests/unit
       - name: Build docker promo_app image
         run: |
           docker build ./promo_app -f ./promo_app/Dockerfile --tag mmjax/microservices-promocode:latest
@@ -40,7 +31,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
+      - name: Prepare unit tests
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip install -r requirements.txt
+      - name: Run unit tests
+        run: |
+          pytest ./tests/unit
       - name: Build docker image
         run: |
           docker build ./order_app -f ./order_app/Dockerfile --tag cr.yandex/${{ secrets.YC_REGISTRY_ID }}/microservices-order:latest
