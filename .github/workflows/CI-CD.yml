@@ -38,6 +38,7 @@ jobs:
 
       - name: Run integration tests for order
         run: |
+          cd ..
           python -m pytest ./tests/integration
 
       - name: Prepare tests for promocode
