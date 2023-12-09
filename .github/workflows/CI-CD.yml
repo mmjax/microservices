@@ -51,7 +51,7 @@ jobs:
       - name: Run unit tests for promocode
         run: |
           cd promo_app
-          python -m pytest ./tests/unit 
+          python -m pytest ./test/unit 
   build-and-push-to-dh:
     name: Build and push to DockerHub
     runs-on: ubuntu-latest
