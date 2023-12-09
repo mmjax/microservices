@@ -21,9 +21,10 @@ jobs:
       - name: Run unit tests for order
         run: |
           python -m pytest ./order_app/tests
+
       - name: Prepare integration tests for order
         run: |
-          sudo docker run -e POSTGRES_PASSWORD=password -p 5432:5432 -d test:14
+          sudo docker run -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:14
           rm ./.env
           echo "AMQP_URL=$AMQP_URL
           POSTGRES_URL=$POSTGRES_URL
