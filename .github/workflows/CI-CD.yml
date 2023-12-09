@@ -39,6 +39,7 @@ jobs:
 
       - name: Run integration tests for order
         run: |
+          cd order_app
           python -m pytest ./tests/integration
 
       - name: Prepare tests for promocode
@@ -49,7 +50,6 @@ jobs:
 
       - name: Run unit tests for promocode
         run: |
-          cd ..
           cd promo_app
           python -m pytest ./tests/unit 
   build-and-push-to-dh:
