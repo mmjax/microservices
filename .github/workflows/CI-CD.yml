@@ -33,7 +33,7 @@ jobs:
           alembic upgrade head
         env:
           AMQP_URL: amqp://guest:guest123@51.250.26.59:5672/
-          POSTGRES_URL: postgresql://postgres:password@localhost:5432/test
+          POSTGRES_URL: postgresql://postgres:password@localhost:5432/postgres
       - name: Run integration tests for order
         - name: Run integration tests
             run: |
