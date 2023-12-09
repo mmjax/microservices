@@ -18,9 +18,34 @@ jobs:
           sudo apt install -y python3-pip
           pip install -r requirements.txt
 
-      - name: Run all tests
+      - name: Run unit tests for order
         run: |
-          python -m pytest
+          python -m pytest ./order_app/tests
+      - name: Prepare integration tests for order
+        run: |
+          sudo docker run -e POSTGRES_PASSWORD=password -p 5432:5432 -d test:14
+          rm ./.env
+          echo "AMQP_URL=$AMQP_URL
+          POSTGRES_URL=$POSTGRES_URL
+          " > .env
+          sleep 5
+          alembic upgrade head
+        env:
+          AMQP_URL: amqp://guest:guest123@51.250.26.59:5672/
+          POSTGRES_URL: postgresql://postgres:password@localhost:5432/test
+      - name: Run integration tests for order
+        - name: Run integration tests
+            run: |
+            python -m pytest ./tests/integration
+      - name: Prepare tests
+      run: |
+        sudo apt update
+        sudo apt install -y python3-pip
+        pip install -r requirements.txt
+
+    - name: Run unit tests for promocode
+      run: |
+        python -m pytest ./promo_app/tests 
   build-and-push-to-dh:
     name: Build and push to DockerHub
     runs-on: ubuntu-latest
