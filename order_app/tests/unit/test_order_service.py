@@ -23,14 +23,14 @@ def second_order_data() -> tuple[UUID, float]:
     return uuid4(), 122.12
 
 
-def test_empty_orders(order_service: OrderService, order_repo: OrderRepo) -> None:
+def test_empty_orders(order_service: order_service, order_repo: order_repo) -> None:
     order_repo.delete_all_orders()
     assert order_service.get_orders() == []
 
 
 def test_create_order(
         first_order_data,
-        order_service: OrderService
+        order_service: order_service
 ) -> None:
     cart, price = first_order_data
     order_service.create_order(cart, price)
@@ -43,7 +43,7 @@ def test_create_order(
 
 def test_create_second_order(
         second_order_data,
-        order_service: OrderService
+        order_service: order_service
 ) -> None:
     cart, price = second_order_data
     order_service.create_order(cart, price)
@@ -56,7 +56,7 @@ def test_create_second_order(
 
 def test_get_orders(
         first_order_data, second_order_data,
-        order_service: OrderService, order_repo: OrderRepo
+        order_service: order_service, order_repo: order_repo
     ) -> None:
     order_repo.delete_all_orders()
     
@@ -82,7 +82,7 @@ def test_get_orders(
 
 
 def test_get_order_by_id_existing_order(
-    first_order_data, order_service: OrderService
+    first_order_data, order_service: order_service
 ) -> None:
     cart_id, price = first_order_data
     order = order_service.get_orders()[0]
@@ -93,25 +93,25 @@ def test_get_order_by_id_existing_order(
     assert order_by_id.status == OrderStatuses.CREATED
     assert order_by_id.discount is None
 
-def test_get_order_by_id_nonexistent_order(order_service: OrderService) -> None:
+def test_get_order_by_id_nonexistent_order(order_service: order_service) -> None:
     with pytest.raises(KeyError):
         order_service.get_order_by_id(uuid4())
 
 
-def test_paid_order_valid(order_service: OrderService) -> None:
+def test_paid_order_valid(order_service: order_service) -> None:
     order = order_service.get_orders()[0]
     order = order_service.paid_order(str(order.id))
     assert order.status == OrderStatuses.PAID
 
 
-def test_set_discount_valid(order_service: OrderService) -> None:
+def test_set_discount_valid(order_service: order_service) -> None:
     discount = 0.1
     order = order_service.get_orders()[0]
     order = order_service.set_discount(str(order.id), discount)
     assert order.discount == discount
 
 
-def test_finish_order_valid(order_service: OrderService) -> None:
+def test_finish_order_valid(order_service: order_service) -> None:
     order = order_service.get_orders()[0]
     order = order_service.finish_order(str(order.id))
     assert order.status == OrderStatuses.DONE

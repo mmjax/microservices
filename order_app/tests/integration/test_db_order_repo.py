@@ -7,7 +7,6 @@ from app.models.order import Order, OrderStatuses
 from app.repositories.bd_order_repo import OrderRepo
 
 
-sleep(10)
 
 @pytest.fixture()
 def order_repo() -> OrderRepo:
@@ -35,25 +34,25 @@ def second_order() -> Order:
     return Order(id=id, cart=cart, status=status, discount=discount, price=price)
 
 
-def test_empty_list(order_repo: OrderRepo) -> None:
+def test_empty_list(order_repo: order_repo) -> None:
     assert order_repo.get_orders() != []
 
-def test_create_first_order(first_order: Order, order_repo: OrderRepo) -> None:
+def test_create_first_order(first_order: Order, order_repo: order_repo) -> None:
     assert order_repo.create_order(first_order) == first_order
     order = order_repo.get_orders()[-1]
     assert order == first_order
 
-def test_get_book_by_id(order_repo: OrderRepo) -> None:
+def test_get_book_by_id(order_repo: order_repo) -> None:
     order = order_repo.get_orders()[0]
     book_by_id = order_repo.get_order_by_id(order.id)
     assert order.id == book_by_id.id
 
-def test_add_second_book(second_order: Order, order_repo: OrderRepo) -> None:
+def test_add_second_book(second_order: Order, order_repo: order_repo) -> None:
     assert order_repo.create_order(second_order) == second_order
     order = order_repo.get_orders()[-1]
     assert order == second_order
 
-def test_set_status_valid(order_repo: OrderRepo, first_order: first_order) -> None:
+def test_set_status_valid(order_repo: order_repo, first_order: first_order) -> None:
     new_status = OrderStatuses.PAID
     order = first_order
     order.status = new_status
@@ -61,7 +60,7 @@ def test_set_status_valid(order_repo: OrderRepo, first_order: first_order) -> No
     updated_order = order_repo.get_order_by_id(order.id)
     assert updated_order.status == new_status
 
-def test_set_discount_valid(order_repo: OrderRepo, first_order: first_order) -> None:
+def test_set_discount_valid(order_repo: order_repo, first_order: first_order) -> None:
     discount = 0.2
     order = first_order
     order.discount = discount

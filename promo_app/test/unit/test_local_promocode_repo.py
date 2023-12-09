@@ -26,22 +26,22 @@ def second_promo() -> Promocode:
 
 
 
-def test_empty_list(promo_repo: PromocodeRepo) -> None:
+def test_empty_list(promo_repo: promo_repo) -> None:
     assert promo_repo.get_promocodes() == []
 
-def test_create_new_promocode(promo_repo: PromocodeRepo, first_promo: first_promo) -> None:
+def test_create_new_promocode(promo_repo: promo_repo, first_promo: first_promo) -> None:
     created_promocode = promo_repo.create_promocode(first_promo.code, first_promo.discount)
     assert created_promocode.id is not None
     assert created_promocode.code == first_promo.code
     assert created_promocode.discount == first_promo.discount
     assert created_promocode in promo_repo.get_promocodes()
 
-def test_get_existing_promocode(promo_repo: PromocodeRepo, second_promo: second_promo) -> None:
+def test_get_existing_promocode(promo_repo: promo_repo, second_promo: second_promo) -> None:
     promo_repo.create_promocode(second_promo.code, second_promo.discount)
     discount = promo_repo.get_promocode(second_promo.code)
     assert discount == second_promo.discount
 
-def test_create_duplicate_promocode(promo_repo: PromocodeRepo, first_promo: first_promo) -> None:
+def test_create_duplicate_promocode(promo_repo: promo_repo, first_promo: first_promo) -> None:
     with pytest.raises(ValueError):
         promo_repo.create_promocode(first_promo.code, first_promo.discount)
 
