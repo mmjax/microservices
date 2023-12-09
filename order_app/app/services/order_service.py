@@ -38,16 +38,11 @@ class OrderService():
 
     def finish_order(self, id: UUID) -> Order:
         order = self.order_repo.get_order_by_id(id)
-        if order.status != OrderStatuses.CREATED:
+        if order.status == OrderStatuses.CREATED:
             raise ValueError
         order.status = OrderStatuses.DONE
         return self.order_repo.set_status(order)
     
-    def set_discount(self, id: UUID, discount:float) -> Order:
-        order = self.order_repo.get_order_by_id(id)
-        if order.status != OrderStatuses.CREATED:
-                    raise ValueError
-        order.discount = discount
-        return self.order_repo.set_discount(order)
+    
     
         

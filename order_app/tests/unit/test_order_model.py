@@ -1,6 +1,5 @@
 import pytest
 from uuid import uuid4
-from pydantic import ValidationError
 from app.models.order import Order, OrderStatuses
 
 
@@ -12,7 +11,7 @@ def any_cart_uuid():
 def test_order_creation(any_cart_uuid):
     order_data = {
         "cart": str(any_cart_uuid),
-        "status": OrderStatuses.DONE.value,
+        "status": OrderStatuses.DONE,
         "discount": 0.1,
         "price": 100.0,
     }
@@ -25,22 +24,37 @@ def test_order_creation(any_cart_uuid):
     assert order.price == 100.0
 
 
-# def test_order_default_values(any_cart_uuid):
-#     order_data = {
-#         "cart": str(any_cart_uuid),
-#         "status": OrderStatuses.DONE,
-#         "price": 100.0,
-#     }
 
-#     order = Order(**order_data)
+def test_order_invalid_id_cart(any_cart_uuid):
+    order_data = {
+        "cart": "1234",
+        "price": 100.0,
+        "status": OrderStatuses.DONE,
+        "discount": 0.1,
+    }
 
+    with pytest.raises(ValueError):
+        Order(**order_data)
+
+
+def test_order_invalid_price(any_cart_uuid):
+    order_data = {
+        "cart": str(any_cart_uuid),
+        "price": 'invalid price',
+        "status": OrderStatuses.DONE,
+        "discount": 0.1,
+    }
+
+    with pytest.raises(ValueError):
+        Order(**order_data)
 
 
 def test_order_invalid_status(any_cart_uuid):
     order_data = {
         "cart": str(any_cart_uuid),
-        "status": "invalid_status",
         "price": 100.0,
+        "status": "invalid status",
+        "discount": 0.1,
     }
 
     with pytest.raises(ValueError):
@@ -50,21 +64,22 @@ def test_order_invalid_status(any_cart_uuid):
 def test_order_invalid_discount(any_cart_uuid):
     order_data = {
         "cart": str(any_cart_uuid),
-        "status": OrderStatuses.DONE,
-        "discount": "invalid_discount",
         "price": 100.0,
+        "status": OrderStatuses.DONE,
+        "discount": "invalid discount",
     }
 
     with pytest.raises(ValueError):
         Order(**order_data)
 
 
-def test_order_negative_price(any_cart_uuid):
+def test_order_with_no_cart_id():
     order_data = {
-        "cart": str(any_cart_uuid),
-        "status": OrderStatuses.DONE.value,
-        "price": -100.0,
+        "price": 100.0,
+        "status": "invalid status",
+        "discount": 0.1,
     }
 
     with pytest.raises(ValueError):
         Order(**order_data)
+

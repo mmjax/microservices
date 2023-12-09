@@ -30,14 +30,12 @@ class PromocodeRepo():
         for p in promocodes:
             if p.code == code:
                 return p.discount
-        return 0
+        raise ValueError(f"Promocode with code '{code}' do not exists")
     
     def create_promocode(self, code: str, discount: float) -> Promocode:
-        # Check if a promocode with the same code already exists
         existing_promocode = next((p for p in promocodes if p.code == code), None)
         if existing_promocode:
             raise ValueError(f"Promocode with code '{code}' already exists")
-        # Create a new promocode
         new_promocode = Promocode(id=uuid4(), code=code, discount=discount)
         promocodes.append(new_promocode)
         return new_promocode

@@ -72,3 +72,7 @@ class OrderRepo():
         except:
             traceback.print_exc()
             raise KeyError
+    
+    def delete_all_orders(self) -> None:
+        self.db.query(DBOrder).delete()
+        self.db.commit()
