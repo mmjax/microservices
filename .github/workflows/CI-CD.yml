@@ -20,7 +20,7 @@ jobs:
 
       - name: Run all tests
         run: |
-          pytest
+          python -m pytest
   build-and-push-to-dh:
     name: Build and push to DockerHub
     runs-on: ubuntu-latest
