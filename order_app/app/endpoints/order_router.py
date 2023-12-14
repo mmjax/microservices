@@ -5,6 +5,16 @@ from app.services.order_service import OrderService
 from app.models.order import Order
 import prometheus_client
 from fastapi import Response
+import app.endpoints.auth_router as auth
+from starlette.responses import RedirectResponse
+from app.endpoints.auth_router import get_user_role
+import logging
+
+logging.basicConfig()
+
+
+
+host_ip = "172.19.64.1"
 
 
 order_router = APIRouter(prefix='/order', tags=['Order'])
@@ -33,33 +43,52 @@ def get_metrics():
     )
 
 @order_router.get('/')
-def get_orders(order_service: OrderService = Depends(OrderService)) -> list[Order]:
-    get_orders_count.inc(1)
-    return order_service.get_orders()
-
+def get_orders(order_service: OrderService = Depends(OrderService), user_role: str = Depends(get_user_role)) -> list[Order]:
+    if user_role is not None:
+        if user_role == "Viewer" or user_role == "Customer":
+            get_orders_count.inc(1)
+            return order_service.get_orders()        
+        raise HTTPException(status_code=403, detail=f"{user_role}")
+    else:
+        return RedirectResponse(url=f"http://{host_ip}:80/auth/login")
+        
+    
+        
 @order_router.get('/{id}}')
-def get_order_by_id(id: UUID, order_service: OrderService = Depends(OrderService)) -> Order:
+def get_order_by_id(id: UUID, order_service: OrderService = Depends(OrderService), user_role: str = Depends(get_user_role)) -> Order:
     try:
-        get_order_by_id_count.inc(1)
-        return order_service.get_order_by_id(id)
+        if user_role is not None:
+            if user_role == "Viewer" or user_role == "Customer":
+                get_order_by_id_count.inc(1)
+                return order_service.get_order_by_id(id)
+        else:
+            return RedirectResponse(url=f"http://{host_ip}:80/auth/login")      
     except KeyError:
         raise HTTPException(404, f'Order with id={id} not found')
     
 @order_router.post('/')
-def create_order(cart: UUID, price: float, order_service: OrderService = Depends(OrderService)) -> Order:
+def create_order(cart: UUID, price: float, order_service: OrderService = Depends(OrderService), user_role: str = Depends(get_user_role)) -> Order:
     try:
-        create_order_count.inc(1)
-        order = order_service.create_order(cart, price)
-        return order.dict()
+        if user_role is not None:
+            if user_role == "Viewer" or user_role == "Customer":
+                create_order_count.inc(1)
+                order = order_service.create_order(cart, price)
+                return order.dict()
+        else:
+            return RedirectResponse(url=f"http://{host_ip}:80/auth/login")        
     except KeyError:
         raise HTTPException(404, f'Order with not found')
 
 
 @order_router.post('/{id}/paid')
-def paid_order(id: UUID, order_service: OrderService = Depends(OrderService)) -> Order:
+def paid_order(id: UUID, order_service: OrderService = Depends(OrderService), user_role: str = Depends(get_user_role)) -> Order:
     try:
-        order = order_service.paid_order(id)
-        return order.dict()
+        if user_role is not None:
+            if user_role == "Viewer" or user_role == "Customer":
+                order = order_service.paid_order(id)
+                return order.dict()
+        else:
+            return RedirectResponse(url=f"http://{host_ip}:80/auth/login")
     except KeyError:
         raise HTTPException(404, f'Order with id={id} not found')
     except ValueError:

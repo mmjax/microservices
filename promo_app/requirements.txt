@@ -44,3 +44,4 @@ yarl==1.9.3
 sqlalchemy_utils==0.41.1
 pytest==7.4.3
 prometheus_client==0.11.0
+httpx==0.25.2
