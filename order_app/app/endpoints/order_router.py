@@ -9,12 +9,12 @@ import app.endpoints.auth_router as auth
 from starlette.responses import RedirectResponse
 from app.endpoints.auth_router import get_user_role
 import logging
+from starlette.requests import Request
 
 logging.basicConfig()
 
 
-
-host_ip = "172.19.64.1"
+host_ip = "192.168.1.92"
 
 
 order_router = APIRouter(prefix='/order', tags=['Order'])
@@ -43,19 +43,20 @@ def get_metrics():
     )
 
 @order_router.get('/')
-def get_orders(order_service: OrderService = Depends(OrderService), user_role: str = Depends(get_user_role)) -> list[Order]:
-    if user_role is not None:
-        if user_role == "Viewer" or user_role == "Customer":
+def get_user_orders(request: Request, order_service: OrderService = Depends(OrderService), user: dict = Depends(get_user_role)) -> list[Order]:
+    if user['role'] != '':
+        if user['role'] == "Viewer" or user['role'] == "Customer":
             get_orders_count.inc(1)
-            return order_service.get_orders()        
-        raise HTTPException(status_code=403, detail=f"{user_role}")
+            return order_service.get_user_orders(UUID(user['id']))        
+        raise HTTPException(status_code=403, detail=f"{user['role']}")
     else:
+        request.session['prev_url'] = str(request.url)
         return RedirectResponse(url=f"http://{host_ip}:80/auth/login")
         
     
         
 @order_router.get('/{id}}')
-def get_order_by_id(id: UUID, order_service: OrderService = Depends(OrderService), user_role: str = Depends(get_user_role)) -> Order:
+def get_order_by_id(id: UUID, request: Request, order_service: OrderService = Depends(OrderService), user_role: str = Depends(get_user_role)) -> Order:
     try:
         if user_role is not None:
             if user_role == "Viewer" or user_role == "Customer":

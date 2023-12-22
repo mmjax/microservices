@@ -28,11 +28,11 @@ class OrderRepo():
         result = DBOrder(**data)
         return result
 
-    def get_orders(self) -> list[Order]:
-        deliveries = []
-        for d in self.db.query(DBOrder).all():
-            deliveries.append(self._map_to_model(d))
-        return deliveries
+    def get_user_orders(self, user_id: UUID) -> list[Order]:
+        orders = []
+        for d in self.db.query(DBOrder).filter(DBOrder.user_id == user_id):
+            orders.append(self._map_to_model(d))
+        return orders
 
     def get_order_by_id(self, id: UUID) -> Order:
         order = self.db \

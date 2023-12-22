@@ -11,6 +11,7 @@ class OrderStatuses(enum.Enum):
 
 class Order(BaseModel):
     model_config = ConfigDict(from_attributes=True)
+    user_id: UUID
     id: UUID = uuid4()
     cart: UUID
     status: OrderStatuses

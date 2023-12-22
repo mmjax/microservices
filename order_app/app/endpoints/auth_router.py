@@ -1,39 +1,54 @@
 from fastapi import APIRouter, Depends
 import httpx
 from starlette.requests import Request
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, Response
+import logging
 
 
-host_ip = "172.19.64.1"
+host_ip = "192.168.1.92"
 keycloak_authorization_url = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/auth"
 keycloak_token_url = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/token"
 keycloak_user_info_url = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/userinfo"
 keycloak_client_id = "order-app"
-keycloak_client_secret = "OrnGoUO1UpESwIShI912z4D2wpgZBwcE"
+keycloak_client_secret = "j4fb56DrZ56LYwY3h8byA7YBkwFAeKZM"
 keycloak_redirect_uri = f"http://{host_ip}:80/auth/callback"
 keycloak_logout_uri = f"http://{host_ip}:8080/realms/master/protocol/openid-connect/logout"
-home_page = f"http://{host_ip}:80/docs"
+home_page = f"http://{host_ip}:80/order"
 
 auth_router = APIRouter(prefix='/auth', tags=['auth'])
 
+logging.basicConfig()
 
 def get_user_role(request: Request):
-    user_role = request.session.get('user_role')
-    code = request.query_params.get("code")
-    if not user_role and code:
-        token = get_token(code)
-        headers = {"Authorization": f"Bearer {token}"}
+    token = request.session.get('auth_token')
+    headers = {"Authorization": f"Bearer {token}"}
+    user = {'role': '', 'id': ''}
+    try:
         roles = httpx.get(keycloak_user_info_url, headers=headers).json()
         if 'Viewer' in roles["realm_access"]["roles"]:
-            user_role = "Viewer"
+            user['role'] = "Viewer"
         elif "Customer" in roles["realm_access"]["roles"]:
-            user_role = "Customer"
-        request.session['user_role'] = user_role
-    return user_role
+            user['role'] = "Customer"
+        if roles["sub"]:
+            user['id'] = roles["sub"]
+        return user
+    except:
+        request.session['user_role'] = None
+        return user
+
+def get_token(request: Request):
+    code = request.query_params.get("code")
+    auth_token = request.session.get('auth_token')
+    if code:
+        auth_token = get_token(code)
+        request.session['auth_token'] = auth_token
+    return auth_token
+
 
 @auth_router.get("/login")
-def login():
+def login(request: Request):
     authorization_url = (f"{keycloak_authorization_url}?response_type=code&client_id={keycloak_client_id}&scope=openid profile&redirect_uri={keycloak_redirect_uri}")
+    logging.info(request.session.get('prev_url'))
     return RedirectResponse(url=authorization_url)
 
 @auth_router.get("/logout")
@@ -43,8 +58,8 @@ def logout(request: Request):
     return RedirectResponse(url=logout_url)
 
 @auth_router.get("/callback")
-def callback(request: Request, user_role: str = Depends(get_user_role)):
-    return RedirectResponse(url=home_page)
+def callback(request: Request, token: str = Depends(get_token)):
+    return RedirectResponse(url=request.session.get('prev_url'))
 
 def get_token(code):
     data = {
@@ -55,6 +70,10 @@ def get_token(code):
             "redirect_uri": keycloak_redirect_uri,
             "scope": "openid profile roles",
         }
-    response = httpx.post(keycloak_token_url, data=data)
-    return response.json()['access_token']
+    try:
+        response = httpx.post(keycloak_token_url, data=data)
+        return response.json()['access_token']
+    except Exception as e:
+        raise Exception(f"An error occurred: {e}")
+    
 

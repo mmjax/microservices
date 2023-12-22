@@ -12,6 +12,7 @@ from app.models.order import OrderStatuses
 class Order(Base):
     __tablename__ = 'orders'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4())
+    user_id = Column(UUID(as_uuid=True))
     status = Column(Enum(OrderStatuses), nullable=True)
     discount = Column(Float, nullable=True)
     price = Column(Float, nullable=True, default=1)

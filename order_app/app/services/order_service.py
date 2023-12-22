@@ -12,8 +12,8 @@ class OrderService():
     def __init__(self, order_repo: OrderRepo = Depends(OrderRepo)) -> None:
         self.order_repo = order_repo
 
-    def get_orders(self) -> list[Order]:
-        return self.order_repo.get_orders()
+    def get_user_orders(self, user_id: UUID) -> list[Order]:
+        return self.order_repo.get_user_orders(user_id)
     
     def get_order_by_id(self, order_id: UUID):
         return self.order_repo.get_order_by_id(order_id)
