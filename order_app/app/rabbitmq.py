@@ -17,6 +17,7 @@ async def process_discount(msg: IncomingMessage):
         logging.info(data)
         id = UUID(data['id'])
         discount = data['discount']
+        logging.info(id)
         order_service = OrderService(OrderRepo())
         order_service.set_discount(id, discount)
     except:

@@ -15,7 +15,7 @@ promocodes: list[Promocode] = [
               discount=0.20),
     Promocode(id=UUID('7e43fdaf-2bb6-41df-a1fb-c8d180704f62'),
               code="Skalozubov",
-              discount=0.30),
+              discount=0.10),
 ]
 
 class PromocodeRepo():

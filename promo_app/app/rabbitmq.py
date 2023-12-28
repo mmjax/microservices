@@ -24,7 +24,7 @@ async def send_discount(discount: float, id: UUID):
     connection = await connect_robust(settings.amqp_url)
     channel = await connection.channel()
     message_body = json.dumps({'discount': discount, 'id': str(id)})
-    logging.info(message_body, 'rab_prom')
+    logging.info(message_body)
     await channel.default_exchange.publish(
         Message(body=message_body.encode()),
         routing_key='process_discount_queue'
